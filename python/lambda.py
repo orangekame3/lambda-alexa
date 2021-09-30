@@ -133,26 +133,7 @@ def handle_non_discovery(request):
         "header": header,
         "payload": payload
     }
-    send_command("command","Executed")
     return response
-
-client = boto3.client('iot-data', region_name='ap-northeast-1')
-
-def send_command(name, value) :
-    obj = {
-        "state": {
-            "Hello, Tell you discomfort index.": {
-                name : value
-            }
-        }
-    }
-    
-    my_topic ='topic/to/subscribe'
-    client.publish(
-        topic=my_topic,
-        qos=0,
-        payload=json.dumps(obj)
-    )
 
 # v2 utility functions
 def get_appliance_by_appliance_id(appliance_id):
@@ -228,6 +209,7 @@ def handle_non_discovery_v3(request):
                 "payload": {}
             }
         }
+        send_command("command","Executed")
         return response
 
     elif request_namespace == "Alexa.Authorization":
@@ -246,6 +228,24 @@ def handle_non_discovery_v3(request):
             return response
 
     # other handlers omitted in this example
+
+client = boto3.client('iot-data', region_name='ap-northeast-1')
+
+def send_command(name, value) :
+    obj = {
+        "state": {
+            "Hello, Tell you discomfort index.": {
+                name : value
+            }
+        }
+    }
+    
+    my_topic ='topic/to/subscribe'
+    client.publish(
+        topic=my_topic,
+        qos=0,
+        payload=json.dumps(obj)
+    )
 
 # v3 utility functions
 def get_endpoint_from_v2_appliance(appliance):
