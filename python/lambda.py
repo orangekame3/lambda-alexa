@@ -26,6 +26,7 @@ import logging
 import time
 import json
 import uuid
+import boto3
 
 # Imports for v3 validation
 from validation import validate_message
@@ -118,6 +119,7 @@ def handle_non_discovery(request):
             "messageId": get_uuid()
         }
         payload = {}
+        
     elif request_name == "TurnOffRequest":
         header = {
             "namespace": "Alexa.ConnectedHome.Control",
@@ -131,7 +133,26 @@ def handle_non_discovery(request):
         "header": header,
         "payload": payload
     }
+    send_command("command","Executed")
     return response
+
+client = boto3.client('iot-data', region_name='ap-northeast-1')
+
+def send_command(name, value) :
+    obj = {
+        "state": {
+            "Hello, Tell you discomfort index.": {
+                name : value
+            }
+        }
+    }
+    
+    my_topic ='topic/to/subscribe'
+    client.publish(
+        topic=my_topic,
+        qos=0,
+        payload=json.dumps(obj)
+    )
 
 # v2 utility functions
 def get_appliance_by_appliance_id(appliance_id):
